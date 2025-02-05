@@ -8,5 +8,29 @@
 </head>
 <body>
     <script src="script.js"></script>
+
+    <p id="title">WELCOME TO TIC TAC TOE</p>
+    <p id="info">Player 1 enter your name and symbol, Player 2 enter your name.</p>
+    <div class="playerCreation" id="playerCreation">
+    <input type="text" id="player1" placeholder="Player 1">
+    <select id="symbol"><option></option><option>X</option><option>O</option></select>
+    <input type="text" id="player2" placeholder="Player 2">
+    <button onclick="submit1()">Start!</button>
+    </div>
+    <button onclick="reload()" id="restart">Restart!</button>
+
+
+    <div class="grid-container">
+        <button class="grid-item" id="0"></button>
+        <button class="grid-item" id="1"></button>
+        <button class="grid-item" id="2"></button>
+        <button class="grid-item" id="3"></button>
+        <button class="grid-item" id="4"></button>
+        <button class="grid-item" id="5"></button>
+        <button class="grid-item" id="6"></button>
+        <button class="grid-item" id="7"></button>
+        <button class="grid-item" id="8"></button>
+      </div>
+
 </body>
 </html>

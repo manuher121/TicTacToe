@@ -4,6 +4,13 @@ function Gameboard() {
     return cells
 }
 
+function DisplayGameboard(gameboard) {
+    for (let i = 0; i < gameboard.length; i++) {
+        console.log(gameboard[i]);
+        document.getElementById(i).innerHTML = gameboard[i];
+    }
+}
+
 winningCombinations = [
     [0, 1, 2],
     [3, 4, 5],
@@ -28,33 +35,40 @@ function checkWin(gameboard, player) {
 function checkDraw(gameboard) {
     for (let i = 0; i < gameboard.length; i++) {
         if (gameboard[i] == " ") {
+            console.log("nodrAW")
             return false;
         }
     }
+    console.log("draw")
     return true;
 }   
 
-function Player(x) {
-    let name = prompt("Please enter your name");
-    let symbol = selectSymbol(x);
+function Player(n, s) {
+    let name = n;
+    let symbol = s;
 
     return {name, symbol}
 }
 
+function submit1() {
+    const player1 = document.getElementById("player1").value;
+    const player2 = document.getElementById("player2").value;
+    const symbol = document.getElementById("symbol").value;
+    if (player1 == "" || player2 == "" || symbol == "") {
+        alert("Please enter both names and select a symbol");
+        return;
+    }
+    else {
+        clear();
+        return Game(player1, player2, symbol);
+    }
+}
+
 function selectSymbol(x) {
-    if (x) {
-        if (x.symbol == "x") {
-            return "o";
-        }   else {
-            console.log(x.symbol);
-            return "x";
-        }
+    if (x == "X") {
+        return "O";
     }   else {
-        symbol = prompt("Please enter your symbol");
-        while (symbol != "x" && symbol != "o") {
-            symbol = prompt("Please enter your symbol");
-        }
-        return symbol;
+        return "X";
     }
 }
 
@@ -62,15 +76,11 @@ function Display(gameboard) {
     console.log('|' + gameboard[0] + '|' + gameboard[1] + '|' + gameboard[2] + '|\n|' + gameboard[3] + '|' + gameboard[4] + '|' + gameboard[5] + '|\n|' + gameboard[6] + '|' + gameboard[7] + '|' + gameboard[8] + '|');
 }
 
-function playerMove(gameboard, player) {
-    let move = prompt("Please enter your move from 1 to 9");
-    if (gameboard[move - 1] !== " ") {
-        console.log("Please enter a valid move");        
-        return playerMove(gameboard, player);
-    }   else {
-        gameboard[move - 1] = player.symbol;
-        return gameboard;     
-    }   
+function playerMove(boxId, currentPlayer, gameboard) {
+    let move = boxId;
+        gameboard[move] = currentPlayer.symbol;
+        DisplayGameboard(gameboard);
+        return gameboard;      
 }
 
 function switchPlayer(currentPlayer, player1, player2) {
@@ -82,42 +92,71 @@ function switchPlayer(currentPlayer, player1, player2) {
     }
 }   
 
-function Game() {
-    /*Control the game flow*/
-    const gameboard = Gameboard();
-    const player1 = Player();
-    const player2 = Player(player1);
-    let currentPlayer = player1;
+function clear() {
+    document.getElementById("playerCreation").innerHTML = "";
+    document.getElementById("title").innerHTML = "";
+    console.log("clear");
+}
 
-    console.log(player1.name, player1.symbol, player2.name, player2.symbol);
-
-    Display(gameboard);
-
-    let winner = "none";
-
-    while (winner == "none") {
-
-        playerMove(gameboard, currentPlayer);
-        winner = checkWin(gameboard, player1);
-
-        if (winner != "none") {
-            Display(gameboard);
-            console.log(winner, "wins");
-            break;
-        }
-
-        if (checkDraw(gameboard)) {
-            Display(gameboard);
-            console.log("Draw");
-            break;
-        }
-
-        console.log(currentPlayer, currentPlayer.symbol, currentPlayer.name);
-
-        currentPlayer = switchPlayer(currentPlayer, player1, player2);
-
-        Display(gameboard);
-        
+function blockBox() {
+    for (let i = 0; i < 9; i++) {
+        var boxes = document.querySelectorAll('.grid-item')
+            boxes.forEach(function(box) {
+                    document.getElementById(i).style.pointerEvents="none"
+    })
+            }
     }
 
+
+function clearBox() {
+    for (let i = 0; i < 9; i++) {
+        var boxes = document.querySelectorAll('.grid-item')
+            boxes.forEach(function(box) {
+                    document.getElementById(i).style.pointerEvents = "auto";
+            })
+    }   
 }
+function Game(p1, p2, symbol) {
+    /*Control the game flow*/
+    const gameboard = Gameboard();
+    DisplayGameboard(gameboard);
+    const player1 = Player(p1, symbol);
+    const player2 = Player(p2, selectSymbol(symbol));
+    let currentPlayer = player1;
+    clearBox();
+    let winner = "none";
+    document.getElementById("info").innerHTML = currentPlayer.name + "'s turn";
+    document.getElementById("restart").style.display = "block";
+
+    if (winner == "none") {
+        var boxes = document.querySelectorAll('.grid-item')
+            boxes.forEach(function(box) {
+                box.addEventListener('click', function() {
+                    var boxId = this.getAttribute('id');
+                    document.getElementById(boxId).style.pointerEvents="none"
+                    playerMove(boxId, currentPlayer, gameboard);
+                    winner = checkWin(gameboard, currentPlayer);
+
+                    currentPlayer = switchPlayer(currentPlayer, player1, player2);
+                    document.getElementById("info").innerHTML = currentPlayer.name + "'s turn";
+
+
+                    if (winner != "none") {
+                        console.log(winner, "wins");
+                        document.getElementById("info").innerHTML = winner + " wins";
+                        blockBox();
+                    }
+
+                    if (winner == "none" && (checkDraw(gameboard))) {
+                        document.getElementById("info").innerHTML = "Draw";
+                    }
+                })
+            })  
+    }
+}
+
+function reload() {
+    location.reload();
+}
+
+blockBox();
